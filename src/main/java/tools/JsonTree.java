@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class JsonTree {
 
     @SuppressWarnings("unused")
-    private final JsonObject rootNode;
+    private final JsonElement rootNode;
 
     @SuppressWarnings("unused")
     private final ArrayList<ParamElement> params;
@@ -18,7 +18,7 @@ public class JsonTree {
     @SuppressWarnings("unused")
     public JsonTree(String rawJsonStr) {
         final Gson mainGson = new Gson();
-        rootNode = mainGson.toJsonTree(rawJsonStr).getAsJsonObject();
+        rootNode = mainGson.fromJson(rawJsonStr, JsonElement.class);
         params = new ArrayList<>();
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.OBJECT, "quiz"));
@@ -29,7 +29,7 @@ public class JsonTree {
 
 
     @SuppressWarnings("unused")
-    public ArrayList<String> query() throws Exception {
+    public ArrayList<String> query(){
         return searchRecursively(rootNode, 0, 4);
     }
 
