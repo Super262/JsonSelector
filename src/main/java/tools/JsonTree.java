@@ -20,10 +20,10 @@ public class JsonTree {
 
         //
         params.add(new ParamElement(ParamType.OBJECT));
-        params.add(new ParamElement(ParamType.OBJECT, "quiz1"));
-        params.add(new ParamElement(ParamType.OBJECT, "sport"));
         params.add(new ParamElement(ParamType.OBJECT));
-        params.add(new ParamElement(ParamType.ARRAY, "options"));
+        params.add(new ParamElement(ParamType.OBJECT));
+        params.add(new ParamElement(ParamType.OBJECT, "q2"));
+        params.add(new ParamElement(ParamType.ARRAY));
     }
 
 
@@ -37,6 +37,7 @@ public class JsonTree {
         ParamElement startParam = params.get(searchStartIndex);
         final ArrayList<String> result = new ArrayList<>();
         if (isSameType(startNode, startParam) && (startParam.isForAllKey() || startParam.getKey().equals(realKey))) {
+
             if (startNode.isJsonObject()) {
                 final JsonObject startObject = startNode.getAsJsonObject();
                 if (searchStartIndex < params.size() - 1) {
@@ -95,10 +96,7 @@ public class JsonTree {
         if (node.isJsonPrimitive() && element.getType() == ParamType.PRIMITIVE) {
             return true;
         }
-        if (node.isJsonNull() && element.getType() == ParamType.NULL) {
-            return true;
-        }
-        return false;
+        return node.isJsonNull() && element.getType() == ParamType.NULL;
     }
 
 }
