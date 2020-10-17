@@ -21,17 +21,16 @@ public class JsonTree {
         rootNode = mainGson.fromJson(rawJsonStr, JsonElement.class);
         params = new ArrayList<>();
         params.add(new ParamElement(ParamType.OBJECT));
-        params.add(new ParamElement(ParamType.OBJECT, "quiz"));
+        params.add(new ParamElement(ParamType.OBJECT, "quiz1"));
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.ARRAY, "options"));
-//        params.add(new ParamElement(ParamType.ARRAY, "options"));
     }
 
 
     @SuppressWarnings("unused")
     public ArrayList<String> query(){
-        return searchRecursively(rootNode, 0, 0);
+        return searchRecursively(rootNode, 0, 2);
     }
 
     @SuppressWarnings("unused")
@@ -70,8 +69,6 @@ public class JsonTree {
                     }
                 }
             }
-
-            // for null and primitive, return empty array if target doesn't equal with start.
 
             return result;
 
