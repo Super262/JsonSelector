@@ -3,8 +3,6 @@ package tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//  写完后一定要检查是否有空指针情况或者越界情况
-
 public class Analyzer {
     private final Object JSON_DATA;
     private int currentIndex;
