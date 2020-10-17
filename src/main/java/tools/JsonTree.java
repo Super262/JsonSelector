@@ -1,9 +1,6 @@
 package tools;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.util.ArrayList;
 
@@ -20,69 +17,88 @@ public class JsonTree {
         final Gson mainGson = new Gson();
         rootNode = mainGson.fromJson(rawJsonStr, JsonElement.class);
         params = new ArrayList<>();
+
+        //
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.OBJECT, "quiz1"));
-        params.add(new ParamElement(ParamType.OBJECT));
+        params.add(new ParamElement(ParamType.OBJECT, "sport"));
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.ARRAY, "options"));
     }
 
 
     @SuppressWarnings("unused")
-    public ArrayList<String> query(){
-        return searchRecursively(rootNode, 0, 2);
+    public ArrayList<String> query() {
+        return searchRecursively(null, rootNode, 0, 1);
     }
 
     @SuppressWarnings("unused")
-    private ArrayList<String> searchRecursively(JsonElement startNode, int searchStartIndex, int targetIndex) {
-
-        ParamElement rootParam = params.get(searchStartIndex);
-        if (startNode.isJsonObject() && rootParam.getType() != ParamType.OBJECT) {
-            return new ArrayList<>();
-        }
-        if (startNode.isJsonArray() && rootParam.getType() != ParamType.ARRAY) {
-            return new ArrayList<>();
-        }
-        if (startNode.isJsonPrimitive() && rootParam.getType() != ParamType.PRIMITIVE) {
-            return new ArrayList<>();
-        }
-        if (startNode.isJsonNull() && rootParam.getType() != ParamType.NULL) {
-            return new ArrayList<>();
-        }
-        if (rootParam.isForAllName()) {
-            final ArrayList<String> result = new ArrayList<>();
-            if(startNode.isJsonObject()){
-                final JsonObject startObject = startNode.getAsJsonObject();
-                for(String key : startObject.keySet()){
-                    final ArrayList<String> tempResult = searchRecursively(startObject.get(key), searchStartIndex + 1, targetIndex);
-                    if(!tempResult.isEmpty()){
-                        result.addAll(tempResult);
-                    }
-                }
-            }
-            else if(startNode.isJsonArray()){
-                final JsonArray startArray = startNode.getAsJsonArray();
-                for(JsonElement ele : startArray){
-                    final ArrayList<String> tempResult = searchRecursively(ele, searchStartIndex + 1, targetIndex);
-                    if(!tempResult.isEmpty()){
-                        result.addAll(tempResult);
-                    }
-                }
-            }
-
-            return result;
-
-        } else {
+    private ArrayList<String> searchRecursively(String realKey, JsonElement startNode, int searchStartIndex, int targetIndex) {
+        ParamElement startParam = params.get(searchStartIndex);
+        final ArrayList<String> result = new ArrayList<>();
+        if (isSameType(startNode, startParam) && (startParam.isForAllKey() || startParam.getKey().equals(realKey))) {
             if (startNode.isJsonObject()) {
-                JsonElement nextNode = startNode.getAsJsonObject().get(rootParam.getName());
-                if (nextNode == null) {
-                    return new ArrayList<>();
+                final JsonObject startObject = startNode.getAsJsonObject();
+                if (searchStartIndex < params.size() - 1) {
+                    for (String nextkey : startObject.keySet()) {
+                        result.addAll(searchRecursively(nextkey, startObject.get(nextkey), searchStartIndex + 1, targetIndex));
+                    }
                 } else {
-                    return searchRecursively(nextNode, searchStartIndex + 1, targetIndex);
+                    result.add(startObject.toString());
                 }
+
+            } else if (startNode.isJsonArray()) {
+                final JsonArray tempStartArray = startNode.getAsJsonArray();
+                final JsonArray startArray = new JsonArray();
+                int arrayLen = tempStartArray.size();
+                arrayLen = startParam.getEndIndex() > arrayLen ? arrayLen : startParam.getEndIndex();
+                for(int i = startParam.getStartIndex(); i < arrayLen; ++i){
+                    startArray.add(tempStartArray.get(i));
+                }
+                if(searchStartIndex < params.size() - 1){
+                    for(JsonElement ele : startArray){
+                        result.addAll(searchRecursively(null, ele, searchStartIndex + 1, targetIndex));
+                    }
+                }
+                else{
+                    result.add(startArray.toString());
+                }
+
+            } else if (startNode.isJsonPrimitive()) {
+                final JsonPrimitive startPrimitive = startNode.getAsJsonPrimitive();
+                if(searchStartIndex == params.size() - 1 && (startParam.isForAllValue() || startPrimitive.equals(startParam.getValue()))){
+                    result.add(startPrimitive.toString());
+                }
+
             } else {
-                return new ArrayList<>();
+                final JsonNull startNull = startNode.getAsJsonNull();
+                if(searchStartIndex == params.size() - 1){
+                    result.add(startNull.toString());
+                }
             }
+
         }
+        return result;
     }
+
+
+    private boolean isSameType(JsonElement node, ParamElement element){
+        if(node == null || element == null){
+            return false;
+        }
+        if (node.isJsonObject() && element.getType() == ParamType.OBJECT) {
+            return true;
+        }
+        if (node.isJsonArray() && element.getType() == ParamType.ARRAY) {
+            return true;
+        }
+        if (node.isJsonPrimitive() && element.getType() == ParamType.PRIMITIVE) {
+            return true;
+        }
+        if (node.isJsonNull() && element.getType() == ParamType.NULL) {
+            return true;
+        }
+        return false;
+    }
+
 }

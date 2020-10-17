@@ -1,57 +1,77 @@
 package tools;
+
+import com.google.gson.JsonPrimitive;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 public class ParamElement {
 
     @SuppressWarnings("unused")
     private final ParamType type;
 
     @SuppressWarnings("unused")
-    private String name = null;
+    private String key = null;
 
     @SuppressWarnings("unused")
     private int startIndex = 0, endIndex = Integer.MAX_VALUE;
 
     @SuppressWarnings("unused")
-    private Object value = null;
+    private JsonPrimitive value = null;
 
     @SuppressWarnings("unused")
-    private final boolean forAllName;
+    private final boolean forAllKey, forAllValue;
 
     @SuppressWarnings("unused")
     public ParamElement(ParamType type) {
         this.type = type;
-        forAllName = true;
+        forAllKey = true;
+        forAllValue = true;
     }
 
     @SuppressWarnings("unused")
-    public ParamElement(ParamType type, String name) {
+    public ParamElement(ParamType type, String key) {
         this.type = type;
-        this.name = name;
-        forAllName = false;
+        this.key = key;
+        forAllKey = false;
+        forAllValue = true;
     }
 
     @SuppressWarnings("unused")
-    public ParamElement(ParamType type, String name, Object value) {
+    public ParamElement(ParamType type, String key, Object value) {
         this.type = type;
-        this.name = name;
-        this.value = value;
-        forAllName = false;
+        this.key = key;
+        forAllKey = false;
+        forAllValue = false;
+        if(value instanceof Boolean){
+            this.value = new JsonPrimitive((Boolean) value);
+        }
+        if(value instanceof Number){
+            this.value = new JsonPrimitive((Number) value);
+        }
+        if(value instanceof String){
+            this.value = new JsonPrimitive((String) value);
+        }
+        if(value instanceof Character){
+            this.value = new JsonPrimitive((Character) value);
+        }
     }
 
     @SuppressWarnings("unused")
-    public ParamElement(ParamType type, String name, int startIndex) {
+    public ParamElement(ParamType type, String key, int startIndex) {
         this.type = type;
-        this.name = name;
+        this.key = key;
         this.startIndex = startIndex;
-        forAllName = false;
+        forAllKey = false;
+        forAllValue = true;
     }
 
     @SuppressWarnings("unused")
-    public ParamElement(ParamType type, String name, int startIndex, int endIndex) {
+    public ParamElement(ParamType type, String key, int startIndex, int endIndex) {
         this.type = type;
-        this.name = name;
+        this.key = key;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
-        forAllName = false;
+        forAllKey = false;
+        forAllValue = true;
     }
 
     @SuppressWarnings("unused")
@@ -60,8 +80,8 @@ public class ParamElement {
     }
 
     @SuppressWarnings("unused")
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
     @SuppressWarnings("unused")
@@ -80,7 +100,12 @@ public class ParamElement {
     }
 
     @SuppressWarnings("unused")
-    public boolean isForAllName(){
-        return forAllName;
+    public boolean isForAllKey(){
+        return forAllKey;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isForAllValue(){
+        return forAllValue;
     }
 }
