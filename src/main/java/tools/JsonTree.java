@@ -8,9 +8,14 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 
 public class JsonTree {
+
+    @SuppressWarnings("unused")
     private final JsonObject rootNode;
+
+    @SuppressWarnings("unused")
     private final ArrayList<ParamElement> params;
 
+    @SuppressWarnings("unused")
     public JsonTree(String rawJsonStr) {
         final Gson mainGson = new Gson();
         rootNode = mainGson.toJsonTree(rawJsonStr).getAsJsonObject();
@@ -23,10 +28,12 @@ public class JsonTree {
     }
 
 
+    @SuppressWarnings("unused")
     public ArrayList<String> query() throws Exception {
         return searchRecursively(rootNode, 0, 4);
     }
 
+    @SuppressWarnings("unused")
     private ArrayList<String> searchRecursively(JsonElement startNode, int searchStartIndex, int targetIndex) {
         ParamElement rootParam = params.get(searchStartIndex);
         if (startNode.isJsonObject() && rootParam.getType() != ParamType.OBJECT) {

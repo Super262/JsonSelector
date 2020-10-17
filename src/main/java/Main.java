@@ -1,4 +1,3 @@
-import tools.Analyzer;
 import tools.JsonTree;
 
 import java.nio.charset.StandardCharsets;
