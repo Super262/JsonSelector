@@ -25,16 +25,18 @@ public class JsonTree {
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.OBJECT));
         params.add(new ParamElement(ParamType.ARRAY, "options"));
+//        params.add(new ParamElement(ParamType.ARRAY, "options"));
     }
 
 
     @SuppressWarnings("unused")
     public ArrayList<String> query(){
-        return searchRecursively(rootNode, 0, 4);
+        return searchRecursively(rootNode, 0, 0);
     }
 
     @SuppressWarnings("unused")
     private ArrayList<String> searchRecursively(JsonElement startNode, int searchStartIndex, int targetIndex) {
+
         ParamElement rootParam = params.get(searchStartIndex);
         if (startNode.isJsonObject() && rootParam.getType() != ParamType.OBJECT) {
             return new ArrayList<>();
@@ -48,47 +50,41 @@ public class JsonTree {
         if (startNode.isJsonNull() && rootParam.getType() != ParamType.NULL) {
             return new ArrayList<>();
         }
-        if (searchStartIndex >= targetIndex) {
+        if (rootParam.isForAllName()) {
             final ArrayList<String> result = new ArrayList<>();
-            result.add(rootNode.toString());
+            if(startNode.isJsonObject()){
+                final JsonObject startObject = startNode.getAsJsonObject();
+                for(String key : startObject.keySet()){
+                    final ArrayList<String> tempResult = searchRecursively(startObject.get(key), searchStartIndex + 1, targetIndex);
+                    if(!tempResult.isEmpty()){
+                        result.addAll(tempResult);
+                    }
+                }
+            }
+            else if(startNode.isJsonArray()){
+                final JsonArray startArray = startNode.getAsJsonArray();
+                for(JsonElement ele : startArray){
+                    final ArrayList<String> tempResult = searchRecursively(ele, searchStartIndex + 1, targetIndex);
+                    if(!tempResult.isEmpty()){
+                        result.addAll(tempResult);
+                    }
+                }
+            }
+
+            // for null and primitive, return empty array if target doesn't equal with start.
+
             return result;
+
         } else {
-            if (rootParam.isForAllName()) {
-                final ArrayList<String> result = new ArrayList<>();
-                if(startNode.isJsonObject()){
-                    final JsonObject startObject = startNode.getAsJsonObject();
-                    for(String key : startObject.keySet()){
-                        final ArrayList<String> tempResult = searchRecursively(startObject.get(key), searchStartIndex + 1, targetIndex);
-                        if(!tempResult.isEmpty()){
-                            result.addAll(tempResult);
-                        }
-                    }
-                }
-                else if(startNode.isJsonArray()){
-                    final JsonArray startArray = startNode.getAsJsonArray();
-                    for(JsonElement ele : startArray){
-                        final ArrayList<String> tempResult = searchRecursively(ele, searchStartIndex + 1, targetIndex);
-                        if(!tempResult.isEmpty()){
-                            result.addAll(tempResult);
-                        }
-                    }
-                }
-
-                // for null and primitive, return empty array if target doesn't equal with start.
-
-                return result;
-
-            } else {
-                if (startNode.isJsonObject()) {
-                    JsonElement nextNode = startNode.getAsJsonObject().get(rootParam.getName());
-                    if (nextNode == null) {
-                        return new ArrayList<>();
-                    } else {
-                        return searchRecursively(nextNode, searchStartIndex + 1, targetIndex);
-                    }
-                } else {
+            if (startNode.isJsonObject()) {
+                JsonElement nextNode = startNode.getAsJsonObject().get(rootParam.getName());
+                if (nextNode == null) {
                     return new ArrayList<>();
+                } else {
+                    return searchRecursively(nextNode, searchStartIndex + 1, targetIndex);
                 }
+            } else {
+                return new ArrayList<>();
             }
         }
     }
