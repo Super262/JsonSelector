@@ -3,105 +3,105 @@ import com.google.gson.*;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused")
-public class JsonSelector {
+public class Selector {
 
     private final SearchTree jsonTree;
 
-    public JsonSelector(String rawJsonStr) {
+    public Selector(String rawJsonStr) {
         jsonTree = new SearchTree(rawJsonStr);
     }
 
-    public JsonSelector addObjectSign(){
+    public Selector addObjectSign(){
         jsonTree.addParam(new ParamElement(ParamType.OBJECT));
         return this;
     }
 
-    public JsonSelector addObjectSign(String key){
+    public Selector addObjectSign(String key){
         jsonTree.addParam(new ParamElement(ParamType.OBJECT, key));
         return this;
     }
 
-    public JsonSelector addArraySign(){
+    public Selector addArraySign(){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY));
         return this;
     }
 
-    public JsonSelector addArraySign(int start){
+    public Selector addArraySign(int start){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY, start));
         return this;
     }
 
-    public JsonSelector addArraySign(int start, int end){
+    public Selector addArraySign(int start, int end){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY, start, end));
         return this;
     }
 
-    public JsonSelector addArraySign(String key){
+    public Selector addArraySign(String key){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY, key));
         return this;
     }
 
-    public JsonSelector addArraySign(String key, int start){
+    public Selector addArraySign(String key, int start){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY, key, start));
         return this;
     }
 
-    public JsonSelector addArraySign(String key, int start, int end){
+    public Selector addArraySign(String key, int start, int end){
         jsonTree.addParam(new ParamElement(ParamType.ARRAY, key, start, end));
         return this;
     }
 
-    public JsonSelector addPrimitiveSign(){
+    public Selector addPrimitiveSign(){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE));
         return this;
     }
 
-    public JsonSelector addPrimitiveSign(String key){
+    public Selector addPrimitiveSign(String key){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
 
-    public JsonSelector addIntegerSign(Integer i){
+    public Selector addIntegerSign(Integer i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
         return this;
     }
 
-    public JsonSelector addIntegerSign(String key, Integer i){
+    public Selector addIntegerSign(String key, Integer i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
         return this;
     }
 
-    public JsonSelector addBooleanSign(Boolean i){
+    public Selector addBooleanSign(Boolean i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
         return this;
     }
 
-    public JsonSelector addBooleanSign(String key, Boolean i){
+    public Selector addBooleanSign(String key, Boolean i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
         return this;
     }
 
-    public JsonSelector addStringSign(String i){
+    public Selector addStringSign(String i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
         return this;
     }
 
-    public JsonSelector addStringSign(String key, String i){
+    public Selector addStringSign(String key, String i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
         return this;
     }
 
-    public JsonSelector addCharacterSign(Character i){
+    public Selector addCharacterSign(Character i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
         return this;
     }
 
-    public JsonSelector addCharacterSign(String key, Character i){
+    public Selector addCharacterSign(String key, Character i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
         return this;
     }
 
-    public  JsonSelector setPrevSignAsTarget(){
+    public Selector setPrevSignAsTarget(){
         if(jsonTree.getParamsSize() > 0){
             jsonTree.setTarget(jsonTree.getParamsSize() - 1);
         }
@@ -129,7 +129,7 @@ public class JsonSelector {
 
         private final ArrayList<ParamElement> paramsForSearch;
 
-        private int target = -1;
+        private int target = 0;
 
         @SuppressWarnings("unused")
         private SearchTree(String rawJsonStr) {
