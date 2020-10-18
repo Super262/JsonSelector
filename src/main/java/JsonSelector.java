@@ -102,13 +102,15 @@ public class JsonSelector {
     }
 
     public  JsonSelector setPrevSignAsTarget(){
-        jsonTree.setTarget(jsonTree.getParamsSize() - 1);
+        if(jsonTree.getParamsSize() > 0){
+            jsonTree.setTarget(jsonTree.getParamsSize() - 1);
+        }
         return this;
     }
 
     public ArrayList<String> getSelectedJsonString(){
         final ArrayList<String> result = new ArrayList<>();
-        if(jsonTree.getParamsSize() != 0){
+        if(jsonTree.getParamsSize() != 0 && jsonTree.getTarget() != -1){
             for(JsonElement ele : jsonTree.query()){
                 result.add(ele.toString());
             }
@@ -127,7 +129,7 @@ public class JsonSelector {
 
         private final ArrayList<ParamElement> paramsForSearch;
 
-        private int target;
+        private int target = -1;
 
         @SuppressWarnings("unused")
         private SearchTree(String rawJsonStr) {
@@ -157,77 +159,87 @@ public class JsonSelector {
         }
 
         @SuppressWarnings("unused")
+        private int getTarget(){
+            return target;
+        }
+
+
+        @SuppressWarnings("unused")
         private ArrayList<JsonElement> query() {
             return searchRecursively(null,jsonTree,0, target);
         }
 
         @SuppressWarnings("unused")
         private ArrayList<JsonElement> searchRecursively(String firstKey, JsonElement firstNode, int firstIndex, int targetIndex) {
-            ParamElement firstParam = paramsForSearch.get(firstIndex);
             final ArrayList<JsonElement> result = new ArrayList<>();
-            if (isSameType(firstNode, firstParam) && (firstParam.isForAllKey() || firstParam.getKey().equals(firstKey))) {
-                if (firstNode.isJsonObject()) {
-                    final JsonObject jsonObject = firstNode.getAsJsonObject();
-                    if (firstIndex < targetIndex) {
-                        for (String nextkey : jsonObject.keySet()) {
-                            result.addAll(searchRecursively(nextkey, jsonObject.get(nextkey), firstIndex + 1, targetIndex));
-                        }
-                    } else if (firstIndex == targetIndex){
-                        if(targetIndex == paramsForSearch.size() - 1){
-                            result.add(jsonObject);
-                        }
-                        else{
-                            final ArrayList<JsonElement> validResult = new ArrayList<>();
+            if(firstIndex < paramsForSearch.size()){
+                ParamElement firstParam = paramsForSearch.get(firstIndex);
+                if (isSameType(firstNode, firstParam) && (firstParam.isForAllKey() || firstParam.getKey().equals(firstKey))) {
+                    if (firstNode.isJsonObject()) {
+                        final JsonObject jsonObject = firstNode.getAsJsonObject();
+                        if (firstIndex < targetIndex) {
                             for (String nextkey : jsonObject.keySet()) {
-                                validResult.addAll(searchRecursively(nextkey, jsonObject.get(nextkey), targetIndex + 1, paramsForSearch.size()));
+                                ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), firstIndex + 1, targetIndex);
+                                result.addAll(temp);
                             }
-                            if(!validResult.isEmpty()){
+                        } else if (firstIndex == targetIndex){
+                            if(targetIndex == paramsForSearch.size() - 1){
                                 result.add(jsonObject);
                             }
-                        }
-                    }
-
-                } else if (firstNode.isJsonArray()) {
-                    final JsonArray tempJsonArray = firstNode.getAsJsonArray();
-                    final JsonArray jsonArray = new JsonArray();
-                    int arrayLen = tempJsonArray.size();
-                    arrayLen = firstParam.getEndIndex() > arrayLen ? arrayLen : firstParam.getEndIndex();
-                    for (int i = firstParam.getStartIndex(); i < arrayLen; ++i) {
-                        jsonArray.add(tempJsonArray.get(i));
-                    }
-                    if (firstIndex < targetIndex) {
-                        for (JsonElement ele : jsonArray) {
-                            result.addAll(searchRecursively(null, ele, firstIndex + 1, targetIndex));
-                        }
-                    }
-                    else if (firstIndex == targetIndex){
-                        if(targetIndex == paramsForSearch.size() - 1){
-                            result.add(jsonArray);
-                        }
-                        else{
-                            final ArrayList<JsonElement> validResult = new ArrayList<>();
-                            for (JsonElement ele : jsonArray) {
-                                validResult.addAll(searchRecursively(null, ele, targetIndex + 1, paramsForSearch.size() - 1));
+                            else{
+                                final ArrayList<JsonElement> validResult = new ArrayList<>();
+                                for (String nextkey : jsonObject.keySet()) {
+                                    ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), firstIndex + 1, paramsForSearch.size() - 1);
+                                    validResult.addAll(temp);
+                                }
+                                if(!validResult.isEmpty()){
+                                    result.add(jsonObject);
+                                }
                             }
-                            if(!validResult.isEmpty()){
+                        }
+
+                    } else if (firstNode.isJsonArray()) {
+                        final JsonArray tempJsonArray = firstNode.getAsJsonArray();
+                        final JsonArray jsonArray = new JsonArray();
+                        int arrayLen = tempJsonArray.size();
+                        arrayLen = firstParam.getEndIndex() > arrayLen ? arrayLen : firstParam.getEndIndex();
+                        for (int i = firstParam.getStartIndex(); i < arrayLen; ++i) {
+                            jsonArray.add(tempJsonArray.get(i));
+                        }
+                        if (firstIndex < targetIndex) {
+                            for (JsonElement ele : jsonArray) {
+                                result.addAll(searchRecursively(null, ele, firstIndex + 1, targetIndex));
+                            }
+                        }
+                        else if (firstIndex == targetIndex){
+                            if(targetIndex == paramsForSearch.size() - 1){
                                 result.add(jsonArray);
                             }
+                            else{
+                                final ArrayList<JsonElement> validResult = new ArrayList<>();
+                                for (JsonElement ele : jsonArray) {
+                                    validResult.addAll(searchRecursively(null, ele, targetIndex + 1, paramsForSearch.size() - 1));
+                                }
+                                if(!validResult.isEmpty()){
+                                    result.add(jsonArray);
+                                }
+                            }
+                        }
+
+                    } else if (firstNode.isJsonPrimitive()) {
+                        final JsonPrimitive jsonPrimitive = firstNode.getAsJsonPrimitive();
+                        if (firstIndex == paramsForSearch.size() - 1 && (firstParam.isForAllValue() || jsonPrimitive.equals(firstParam.getValue()))) {
+                            result.add(jsonPrimitive);
+                        }
+
+                    } else {
+                        final JsonNull jsonNull = firstNode.getAsJsonNull();
+                        if (firstIndex == paramsForSearch.size() - 1) {
+                            result.add(jsonNull);
                         }
                     }
 
-                } else if (firstNode.isJsonPrimitive()) {
-                    final JsonPrimitive jsonPrimitive = firstNode.getAsJsonPrimitive();
-                    if (firstIndex == paramsForSearch.size() - 1 && (firstParam.isForAllValue() || jsonPrimitive.equals(firstParam.getValue()))) {
-                        result.add(jsonPrimitive);
-                    }
-
-                } else {
-                    final JsonNull jsonNull = firstNode.getAsJsonNull();
-                    if (firstIndex == paramsForSearch.size() - 1) {
-                        result.add(jsonNull);
-                    }
                 }
-
             }
             return result;
         }
