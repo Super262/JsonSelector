@@ -5,273 +5,234 @@ import java.util.ArrayList;
 @SuppressWarnings("unused")
 public class Selector {
 
-    private final SearchTree jsonTree;
+    private final JsonElement jsonTree;
+
+    private final ArrayList<ParamElement> paramsForSearch;
+
+    private int target;
 
     public Selector(String rawJsonStr) {
-        jsonTree = new SearchTree(rawJsonStr);
+        jsonTree = new Gson().fromJson(rawJsonStr, JsonElement.class);
+        paramsForSearch = new ArrayList<>();
+        target = 0;
     }
 
-    public Selector addObjectSign(){
-        jsonTree.addParam(new ParamElement(ParamType.OBJECT));
+    public Selector addObjectSign() {
+        paramsForSearch.add(new ParamElement(ParamType.OBJECT));
         return this;
     }
 
-    public Selector addObjectSign(String key){
-        jsonTree.addParam(new ParamElement(ParamType.OBJECT, key));
+    public Selector addObjectSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.OBJECT, key));
         return this;
     }
 
-    public Selector addArraySign(){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY));
+    public Selector addArraySign() {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY));
         return this;
     }
 
-    public Selector addArraySign(int start){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY, start));
+    public Selector addArraySign(int start) {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY, start));
         return this;
     }
 
-    public Selector addArraySign(int start, int end){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY, start, end));
+    public Selector addArraySign(int start, int end) {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY, start, end));
         return this;
     }
 
-    public Selector addArraySign(String key){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY, key));
+    public Selector addArraySign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY, key));
         return this;
     }
 
-    public Selector addArraySign(String key, int start){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY, key, start));
+    public Selector addArraySign(String key, int start) {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY, key, start));
         return this;
     }
 
-    public Selector addArraySign(String key, int start, int end){
-        jsonTree.addParam(new ParamElement(ParamType.ARRAY, key, start, end));
+    public Selector addArraySign(String key, int start, int end) {
+        paramsForSearch.add(new ParamElement(ParamType.ARRAY, key, start, end));
         return this;
     }
 
-    public Selector addPrimitiveSign(){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE));
+    public Selector addPrimitiveSign() {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE));
         return this;
     }
 
-    public Selector addPrimitiveSign(String key){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE, key));
+    public Selector addPrimitiveSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
 
-    public Selector addNullSign(){
-        jsonTree.addParam(new ParamElement(ParamType.NULL));
+    public Selector addNullSign() {
+        paramsForSearch.add(new ParamElement(ParamType.NULL));
         return this;
     }
 
-    public Selector addNullSign(String key){
-        jsonTree.addParam(new ParamElement(ParamType.NULL, key));
+    public Selector addNullSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.NULL, key));
         return this;
     }
 
-    public Selector addIntegerSign(Integer i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
+    public Selector addIntegerSign(Integer i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
         return this;
     }
 
-    public Selector addIntegerSign(String key, Integer i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
+    public Selector addIntegerSign(String key, Integer i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector addBooleanSign(Boolean i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
+    public Selector addBooleanSign(Boolean i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
         return this;
     }
 
-    public Selector addBooleanSign(String key, Boolean i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
+    public Selector addBooleanSign(String key, Boolean i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector addStringSign(String i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
+    public Selector addStringSign(String i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
         return this;
     }
 
-    public Selector addStringSign(String key, String i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
+    public Selector addStringSign(String key, String i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector addCharacterSign(Character i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
+    public Selector addCharacterSign(Character i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
         return this;
     }
 
-    public Selector addCharacterSign(String key, Character i){
-        jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,key,i));
+    public Selector addCharacterSign(String key, Character i) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector setPrevSignAsTarget(){
-        if(jsonTree.getParamsSize() > 0){
-            jsonTree.setTarget(jsonTree.getParamsSize() - 1);
+    public Selector setPrevSignAsTarget() {
+        if (!paramsForSearch.isEmpty()) {
+            target = paramsForSearch.size() - 1;
         }
         return this;
     }
 
-    public ArrayList<String> getSelectedJsonString(){
+    public ArrayList<String> getSelectedJsonString() {
         final ArrayList<String> result = new ArrayList<>();
-        if(jsonTree.getParamsSize() != 0 && jsonTree.getTarget() != -1){
-            for(JsonElement ele : jsonTree.query()){
+        if (!paramsForSearch.isEmpty()) {
+            for (JsonElement ele : query()) {
                 result.add(ele.toString());
             }
         }
         return result;
     }
 
-    public ArrayList<JsonElement> getSelectedJsonElement(){
-        return jsonTree.query();
+    public ArrayList<JsonElement> getSelectedJsonElement() {
+        return query();
     }
 
 
-    private static class SearchTree {
 
-        private final JsonElement jsonTree;
+    @SuppressWarnings("unused")
+    private ArrayList<JsonElement> query() {
+        return searchRecursively(null, jsonTree, paramsForSearch, 0, target);
+    }
 
-        private final ArrayList<ParamElement> paramsForSearch;
-
-        private int target = 0;
-
-        @SuppressWarnings("unused")
-        private SearchTree(String rawJsonStr) {
-            final Gson mainGson = new Gson();
-            jsonTree = mainGson.fromJson(rawJsonStr, JsonElement.class);
-            paramsForSearch = new ArrayList<>();
-        }
-
-        @SuppressWarnings("unused")
-        private void addParam(ParamElement param){
-            paramsForSearch.add(param);
-        }
-
-        private int getParamsSize(){
-            return paramsForSearch.size();
-        }
-
-        @SuppressWarnings("unused")
-        private SearchTree removeAllParams(){
-            paramsForSearch.clear();
-            return this;
-        }
-
-        @SuppressWarnings("unused")
-        private void setTarget(int target){
-            this.target = target;
-        }
-
-        @SuppressWarnings("unused")
-        private int getTarget(){
-            return target;
-        }
-
-
-        @SuppressWarnings("unused")
-        private ArrayList<JsonElement> query() {
-            return searchRecursively(null,jsonTree,0, target);
-        }
-
-        @SuppressWarnings("unused")
-        private ArrayList<JsonElement> searchRecursively(String firstKey, JsonElement firstNode, int firstIndex, int targetIndex) {
-            final ArrayList<JsonElement> result = new ArrayList<>();
-            if(firstIndex < paramsForSearch.size()){
-                ParamElement firstParam = paramsForSearch.get(firstIndex);
-                if (isSameType(firstNode, firstParam) && (firstParam.isForAllKey() || firstParam.getKey().equals(firstKey))) {
-                    if (firstNode.isJsonObject()) {
-                        final JsonObject jsonObject = firstNode.getAsJsonObject();
-                        if (firstIndex < targetIndex) {
+    @SuppressWarnings("unused")
+    private ArrayList<JsonElement> searchRecursively(String firstKey, JsonElement firstNode, ArrayList<ParamElement> paramsList, int firstIndex, int targetIndex) {
+        final ArrayList<JsonElement> result = new ArrayList<>();
+        if (firstIndex < paramsList.size()) {
+            ParamElement firstParam = paramsList.get(firstIndex);
+            if (isSameType(firstNode, firstParam) && (firstParam.isForAllKey() || firstParam.getKey().equals(firstKey))) {
+                if (firstNode.isJsonObject()) {
+                    final JsonObject jsonObject = firstNode.getAsJsonObject();
+                    if (firstIndex < targetIndex) {
+                        for (String nextkey : jsonObject.keySet()) {
+                            ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), paramsList, firstIndex + 1, targetIndex);
+                            result.addAll(temp);
+                        }
+                    } else if (firstIndex == targetIndex) {
+                        if (targetIndex == paramsList.size() - 1) {
+                            result.add(jsonObject);
+                        } else {
+                            final ArrayList<JsonElement> validResult = new ArrayList<>();
                             for (String nextkey : jsonObject.keySet()) {
-                                ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), firstIndex + 1, targetIndex);
-                                result.addAll(temp);
+                                ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), paramsList, firstIndex + 1, paramsList.size() - 1);
+                                validResult.addAll(temp);
                             }
-                        } else if (firstIndex == targetIndex){
-                            if(targetIndex == paramsForSearch.size() - 1){
+                            if (!validResult.isEmpty()) {
                                 result.add(jsonObject);
                             }
-                            else{
-                                final ArrayList<JsonElement> validResult = new ArrayList<>();
-                                for (String nextkey : jsonObject.keySet()) {
-                                    ArrayList<JsonElement> temp = searchRecursively(nextkey, jsonObject.get(nextkey), firstIndex + 1, paramsForSearch.size() - 1);
-                                    validResult.addAll(temp);
-                                }
-                                if(!validResult.isEmpty()){
-                                    result.add(jsonObject);
-                                }
-                            }
-                        }
-
-                    } else if (firstNode.isJsonArray()) {
-                        final JsonArray tempJsonArray = firstNode.getAsJsonArray();
-                        final JsonArray jsonArray = new JsonArray();
-                        int arrayLen = tempJsonArray.size();
-                        arrayLen = firstParam.getEndIndex() > arrayLen ? arrayLen : firstParam.getEndIndex();
-                        for (int i = firstParam.getStartIndex(); i < arrayLen; ++i) {
-                            jsonArray.add(tempJsonArray.get(i));
-                        }
-                        if (firstIndex < targetIndex) {
-                            for (JsonElement ele : jsonArray) {
-                                result.addAll(searchRecursively(null, ele, firstIndex + 1, targetIndex));
-                            }
-                        }
-                        else if (firstIndex == targetIndex){
-                            if(targetIndex == paramsForSearch.size() - 1){
-                                result.add(jsonArray);
-                            }
-                            else{
-                                final ArrayList<JsonElement> validResult = new ArrayList<>();
-                                for (JsonElement ele : jsonArray) {
-                                    validResult.addAll(searchRecursively(null, ele, targetIndex + 1, paramsForSearch.size() - 1));
-                                }
-                                if(!validResult.isEmpty()){
-                                    result.add(jsonArray);
-                                }
-                            }
-                        }
-
-                    } else if (firstNode.isJsonPrimitive()) {
-                        final JsonPrimitive jsonPrimitive = firstNode.getAsJsonPrimitive();
-                        if (firstIndex == paramsForSearch.size() - 1 && (firstParam.isForAllValue() || jsonPrimitive.equals(firstParam.getValue()))) {
-                            result.add(jsonPrimitive);
-                        }
-
-                    } else {
-                        final JsonNull jsonNull = firstNode.getAsJsonNull();
-                        if (firstIndex == paramsForSearch.size() - 1) {
-                            result.add(jsonNull);
                         }
                     }
 
-                }
-            }
-            return result;
-        }
+                } else if (firstNode.isJsonArray()) {
+                    final JsonArray tempJsonArray = firstNode.getAsJsonArray();
+                    final JsonArray jsonArray = new JsonArray();
+                    int arrayLen = tempJsonArray.size();
+                    arrayLen = firstParam.getEndIndex() > arrayLen ? arrayLen : firstParam.getEndIndex();
+                    for (int i = firstParam.getStartIndex(); i < arrayLen; ++i) {
+                        jsonArray.add(tempJsonArray.get(i));
+                    }
+                    if (firstIndex < targetIndex) {
+                        for (JsonElement ele : jsonArray) {
+                            result.addAll(searchRecursively(null, ele, paramsList, firstIndex + 1, targetIndex));
+                        }
+                    } else if (firstIndex == targetIndex) {
+                        if (targetIndex == paramsList.size() - 1) {
+                            result.add(jsonArray);
+                        } else {
+                            final ArrayList<JsonElement> validResult = new ArrayList<>();
+                            for (JsonElement ele : jsonArray) {
+                                validResult.addAll(searchRecursively(null, ele, paramsList, targetIndex + 1, paramsList.size() - 1));
+                            }
+                            if (!validResult.isEmpty()) {
+                                result.add(jsonArray);
+                            }
+                        }
+                    }
 
-        @SuppressWarnings("unused")
-        private boolean isSameType(JsonElement node, ParamElement element) {
-            if (node == null || element == null) {
-                return false;
+                } else if (firstNode.isJsonPrimitive()) {
+                    final JsonPrimitive jsonPrimitive = firstNode.getAsJsonPrimitive();
+                    if (firstIndex == paramsList.size() - 1 && (firstParam.isForAllValue() || jsonPrimitive.equals(firstParam.getValue()))) {
+                        result.add(jsonPrimitive);
+                    }
+
+                } else {
+                    final JsonNull jsonNull = firstNode.getAsJsonNull();
+                    if (firstIndex == paramsList.size() - 1) {
+                        result.add(jsonNull);
+                    }
+                }
+
             }
-            if (node.isJsonObject() && element.getType() == ParamType.OBJECT) {
-                return true;
-            }
-            if (node.isJsonArray() && element.getType() == ParamType.ARRAY) {
-                return true;
-            }
-            if (node.isJsonPrimitive() && element.getType() == ParamType.PRIMITIVE) {
-                return true;
-            }
-            return node.isJsonNull() && element.getType() == ParamType.NULL;
         }
+        return result;
     }
 
+    @SuppressWarnings("unused")
+    private boolean isSameType(JsonElement node, ParamElement element) {
+        if (node == null || element == null) {
+            return false;
+        }
+        if (node.isJsonObject() && element.getType() == ParamType.OBJECT) {
+            return true;
+        }
+        if (node.isJsonArray() && element.getType() == ParamType.ARRAY) {
+            return true;
+        }
+        if (node.isJsonPrimitive() && element.getType() == ParamType.PRIMITIVE) {
+            return true;
+        }
+        return node.isJsonNull() && element.getType() == ParamType.NULL;
+    }
     private static class ParamElement {
 
         @SuppressWarnings("unused")
@@ -349,16 +310,16 @@ public class Selector {
             this.type = type;
             forAllKey = true;
             forAllValue = false;
-            if(value instanceof Boolean){
+            if (value instanceof Boolean) {
                 this.value = new JsonPrimitive((Boolean) value);
             }
-            if(value instanceof Number){
+            if (value instanceof Number) {
                 this.value = new JsonPrimitive((Number) value);
             }
-            if(value instanceof String){
+            if (value instanceof String) {
                 this.value = new JsonPrimitive((String) value);
             }
-            if(value instanceof Character){
+            if (value instanceof Character) {
                 this.value = new JsonPrimitive((Character) value);
             }
         }
@@ -369,16 +330,16 @@ public class Selector {
             this.key = key;
             forAllKey = false;
             forAllValue = false;
-            if(value instanceof Boolean){
+            if (value instanceof Boolean) {
                 this.value = new JsonPrimitive((Boolean) value);
             }
-            if(value instanceof Number){
+            if (value instanceof Number) {
                 this.value = new JsonPrimitive((Number) value);
             }
-            if(value instanceof String){
+            if (value instanceof String) {
                 this.value = new JsonPrimitive((String) value);
             }
-            if(value instanceof Character){
+            if (value instanceof Character) {
                 this.value = new JsonPrimitive((Character) value);
             }
         }
@@ -409,12 +370,12 @@ public class Selector {
         }
 
         @SuppressWarnings("unused")
-        private boolean isForAllKey(){
+        private boolean isForAllKey() {
             return forAllKey;
         }
 
         @SuppressWarnings("unused")
-        private boolean isForAllValue(){
+        private boolean isForAllValue() {
             return forAllValue;
         }
     }
