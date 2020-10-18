@@ -61,6 +61,16 @@ public class Selector {
         return this;
     }
 
+    public Selector addNullSign(){
+        jsonTree.addParam(new ParamElement(ParamType.NULL));
+        return this;
+    }
+
+    public Selector addNullSign(String key){
+        jsonTree.addParam(new ParamElement(ParamType.NULL, key));
+        return this;
+    }
+
     public Selector addIntegerSign(Integer i){
         jsonTree.addParam(new ParamElement(ParamType.PRIMITIVE,i));
         return this;

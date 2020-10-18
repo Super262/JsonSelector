@@ -9,7 +9,8 @@
           "Golden State Warriros",
           "Huston Rocket"
         ],
-        "answer": "Huston Rocket"
+        "answer": "Huston Rocket",
+        "help": null
       }
     },
     "maths": {
@@ -21,7 +22,8 @@
           "12",
           "13"
         ],
-        "answer": "12"
+        "answer": "12",
+        "help": null
       },
       "q2": {
         "question": "12 - 8 = ?",
@@ -31,7 +33,8 @@
           "3",
           "4"
         ],
-        "answer": "4"
+        "answer": "4",
+        "help": null
       }
     }
   },
@@ -45,7 +48,8 @@
           "Golden State Warriros",
           "Huston Rocket"
         ],
-        "answer": "Huston Rocket"
+        "answer": "Huston Rocket",
+        "help": null
       }
     },
     "maths": {
@@ -57,7 +61,8 @@
           "12",
           "13"
         ],
-        "answer": "12"
+        "answer": "12",
+        "help": null
       },
       "q2": {
         "question": "12 - 8 = ?",
@@ -67,7 +72,8 @@
           "3",
           "4"
         ],
-        "answer": "4"
+        "answer": "4",
+        "help": null
       }
     }
   }
