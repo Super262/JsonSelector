@@ -77,8 +77,8 @@ public class Selector {
         return this;
     }
 
-    public Selector addIntegerSign(Integer i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
+    public Selector addIntegerSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
 
@@ -87,28 +87,30 @@ public class Selector {
         return this;
     }
 
-    public Selector addBooleanSign(Boolean i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
+    public Selector addBooleanSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
+
 
     public Selector addBooleanSign(String key, Boolean i) {
         paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector addStringSign(String i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
+    public Selector addStringSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
+
 
     public Selector addStringSign(String key, String i) {
         paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
         return this;
     }
 
-    public Selector addCharacterSign(Character i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, i));
+    public Selector addCharacterSign(String key) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key));
         return this;
     }
 
@@ -117,7 +119,7 @@ public class Selector {
         return this;
     }
 
-    public Selector setPrevSignAsTarget() {
+    public Selector setThisSignAsTarget() {
         if (!paramsForSearch.isEmpty()) {
             target = paramsForSearch.size() - 1;
         }
