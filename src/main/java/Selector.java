@@ -82,8 +82,8 @@ public class Selector {
         return this;
     }
 
-    public Selector addIntegerSign(String key, Integer i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
+    public Selector addIntegerSign(String key, Integer value) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, value));
         return this;
     }
 
@@ -93,8 +93,8 @@ public class Selector {
     }
 
 
-    public Selector addBooleanSign(String key, Boolean i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
+    public Selector addBooleanSign(String key, Boolean value) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, value));
         return this;
     }
 
@@ -104,8 +104,8 @@ public class Selector {
     }
 
 
-    public Selector addStringSign(String key, String i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
+    public Selector addStringSign(String key, String value) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, value));
         return this;
     }
 
@@ -114,8 +114,8 @@ public class Selector {
         return this;
     }
 
-    public Selector addCharacterSign(String key, Character i) {
-        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, i));
+    public Selector addCharacterSign(String key, Character value) {
+        paramsForSearch.add(new ParamElement(ParamType.PRIMITIVE, key, value));
         return this;
     }
 

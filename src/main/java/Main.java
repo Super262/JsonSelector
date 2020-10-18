@@ -7,7 +7,7 @@ public class Main {
         byte[] encoded = Files.readAllBytes(Paths.get("/Users/fengwei/IdeaProjects/JsonSelector/data.json"));
         String content = new String(encoded, StandardCharsets.UTF_8);
 
-        Selector selector = new Selector(content).addObjectSign().addArraySign().addObjectSign().addStringSign("title").setThisSignAsTarget();
+        Selector selector = new Selector(content).addObjectSign().addArraySign().addObjectSign().setThisSignAsTarget().addStringSign("accessLevel", "non-public");
         int size = 0;
         for(String s : selector.getSelectedJsonString()){
             System.out.println(s);
